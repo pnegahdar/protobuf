@@ -35,6 +35,10 @@ type Marshaler struct {
 	// as opposed to string values.
 	EnumsAsInts bool
 
+	// EnumsAsInts specifies whether to render enum values as integers,
+	// as opposed to string values.
+	Int64AsInts bool
+
 	// EmitDefaults specifies whether to render fields with zero values.
 	EmitDefaults bool
 
@@ -545,8 +549,10 @@ func (w *jsonWriter) marshalSingularValue(fd protoreflect.FieldDescriptor, v pro
 				return nil
 			}
 		case int64, uint64:
-			w.write(fmt.Sprintf(`"%d"`, v.Interface()))
-			return nil
+			if !w.Int64AsInts{
+				w.write(fmt.Sprintf(`"%d"`, v.Interface()))
+				return nil
+			}
 		}
 
 		b, err := json.Marshal(v.Interface())
